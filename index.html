@@ -15,10 +15,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700;800&display=swap">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
 <style>
 /* Layout: faixa vermelha → topo azul com o corretor e a vitrine → cartão de contato → abas fixas → cards dos imóveis
-   → mapa → escritório → lista de visita fixa embaixo → folhas (detalhes do imóvel, agendar no WhatsApp) */
+   → Instagram → escritório → lista de visita fixa embaixo → folhas (detalhes do imóvel, agendar no WhatsApp) */
 :root{
   --blue:#003DA5; --blue-d:#00256B; --blue-dd:#001A4D; --red:#DC1C2E; --red-d:#A3101F;
   --ink:#0B1B3A; --muted:#5A6785; --paper:#F3F6FB; --line:#DCE3EF; --sky:#BFD3F5;
@@ -140,13 +139,7 @@ h1 .tag{color:var(--red);background:#fff;padding:0 .12em;display:inline-block;tr
 .add.ok{background:var(--red);box-shadow:0 3px 0 var(--red-d);animation:bump .35s}
 .vazio{color:#fff;font-weight:600;text-align:center;padding:30px 0}
 
-/* MAPA */
-.mapa-sec{padding-bottom:10px}
-#mapa{height:min(420px,70vh);border-radius:22px;border:5px solid #fff;overflow:hidden;background:#DCE6F5;box-shadow:0 10px 24px rgba(0,10,40,.3)}
-.mapa-nota{margin:10px 0 0;color:var(--sky);font-size:14px;font-weight:500}
-.pin{background:var(--red)!important;color:#fff!important;border:0!important;border-radius:10px!important;font:400 13px/1 var(--title)!important;padding:7px 9px 6px!important;box-shadow:0 3px 0 var(--red-d)!important;white-space:nowrap}
-.pin::before{display:none}
-.pin-in{animation:cai .5s cubic-bezier(.2,1.3,.4,1) both}
+
 .prog{position:fixed;left:0;top:0;height:4px;width:100%;background:var(--red);transform-origin:0 50%;transform:scaleX(0);z-index:40;pointer-events:none}
 .voa{position:fixed;z-index:60;pointer-events:none;border-radius:12px;object-fit:cover;box-shadow:0 8px 20px rgba(0,0,0,.35)}
 /* INSTAGRAM */
@@ -156,7 +149,7 @@ h1 .tag{color:var(--red);background:#fff;padding:0 .12em;display:inline-block;tr
 .ig-av span{display:grid;place-items:center;width:100%;height:100%;border-radius:50%;border:3px solid #fff;background:var(--blue);color:#fff;font:400 30px var(--title);overflow:hidden}
 .ig-av img{width:100%;height:100%;object-fit:cover}
 .ig-id{flex:1;min-width:170px}
-.ig-id b{display:block;font:400 clamp(15px,4.3vw,19px)/1.15 var(--title);color:var(--ink);overflow-wrap:anywhere}
+.ig-id b{display:block;font:800 clamp(14px,3.9vw,19px)/1.2 var(--body);letter-spacing:-.01em;color:var(--ink);overflow-wrap:anywhere}
 .ig-id small{display:block;color:var(--muted);font-weight:600;margin-top:2px}
 .ig-bio{margin:12px 0 0;color:#2A3858;white-space:pre-line}
 .ig-bio[hidden],.ig-grid[hidden]{display:none}
@@ -165,7 +158,6 @@ h1 .tag{color:var(--red);background:#fff;padding:0 .12em;display:inline-block;tr
 .ig-grid img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s}
 .ig-grid a:hover img{transform:scale(1.07)}
 @media (max-width:420px){.ig-top .btn{flex:1 1 100%}}
-.leaflet-container{font-family:var(--body)}
 
 /* ESCRITÓRIO */
 .loja{margin:24px 0 0;background:#fff;border-radius:24px;overflow:hidden;display:grid;grid-template-columns:1fr;box-shadow:0 7px 0 rgba(0,15,60,.35)}
@@ -340,12 +332,6 @@ footer p{margin:4px 0 0}
   <div class="grid" id="grid"></div>
   <p class="vazio" id="vazio" hidden>Nenhum imóvel nesse filtro.</p>
 
-  <section class="mapa-sec" id="mapa-sec">
-    <div class="sec-h"><h2>No mapa</h2><p>toque no preço para abrir</p></div>
-    <div id="mapa" role="region" aria-label="Mapa dos imóveis em Lajedo"></div>
-    <p class="mapa-nota">Posições aproximadas. Algumas casas e o terreno da BR-423 não têm ponto no mapa: o endereço completo é passado na visita.</p>
-  </section>
-
   <section class="ig" id="ig" aria-label="Instagram">
     <div class="ig-top">
       <div class="ig-av"><span id="ig-av">D</span></div>
@@ -404,7 +390,6 @@ footer p{margin:4px 0 0}
   </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 <script>
 const IMOVEIS = [{"id": "850131018-112", "cod": "112", "titulo": "Casa com piscina no Centro", "local": "R. Presidente Kennedy, 444 · Centro", "tags": ["Preço reduzido", "Desocupada"], "filtros": ["alto", "piscina"], "texto": "Casa ampla na Rua Presidente Kennedy, no Centro de Lajedo, agora com preço reduzido. São 351 m² e 13 cômodos: 4 quartos, banheiro e lavabo, piscina, jardim e garagem para 4 carros. Desocupada e pronta para a nova família.", "extras": ["Piscina", "Jardim", "Garagem p/ 4 carros", "Lavabo", "Gás individual", "Aceita pets", "Acessível"], "preco": 890000, "quartos": 4, "banheiros": 1, "vagas": 4, "area": 351, "terreno": false, "coord": [-8.6572534, -36.3225331], "link": "https://danilodss.remax.com.br/pt-br/imoveis/casa/venda/lajedo/444-presidente-kennedy/850131018-112", "fotos": ["img/112_00.jpg", "img/112_01.jpg", "img/112_02.jpg", "img/112_03.jpg", "img/112_04.jpg", "img/112_05.jpg", "img/112_06.jpg", "img/112_07.jpg", "img/112_08.jpg", "img/112_09.jpg", "img/112_10.jpg", "img/112_11.jpg"], "mini": "img/112_capa.jpg"}, {"id": "850131018-82", "cod": "82", "titulo": "Casa reformada com espaço gourmet", "local": "Lajedo · rua tranquila", "tags": ["Reformada", "Pronta para morar"], "filtros": ["medio"], "texto": "Casa contemporânea e reformada, com 279 m². Tem 4 quartos, cozinha ampla, biblioteca, espaço gourmet, quintal, jardim e garagem para 4 carros. Fica numa rua tranquila, perto de escolas, igreja, hospital e comércio.", "extras": ["Espaço gourmet", "Biblioteca", "Quintal", "Jardim", "Garagem p/ 4 carros", "Perto de escolas", "Gás individual", "Acessível"], "preco": 250000, "quartos": 4, "banheiros": 1, "vagas": 4, "area": 279, "terreno": false, "coord": [-8.6518832, -36.321642], "link": "https://danilodss.remax.com.br/pt-br/imoveis/casa/venda/lajedo/850131018-82", "fotos": ["img/82_00.jpg", "img/82_01.jpg", "img/82_02.jpg", "img/82_03.jpg", "img/82_04.jpg", "img/82_05.jpg", "img/82_06.jpg"], "mini": "img/82_capa.jpg"}, {"id": "850131018-89", "cod": "89", "titulo": "Casa grande no Centro, já alugada", "local": "R. Major Capitu · Centro", "tags": ["Renda de aluguel", "Ótimo preço"], "filtros": ["medio"], "texto": "Boa para investir: a casa já está alugada e garante renda desde o primeiro mês. São 360 m² num terreno de 12 x 30 m, com 10 cômodos, 5 quartos e 2 banheiros. Também serve para família grande.", "extras": ["Terreno 12 x 30 m", "Já alugada", "10 cômodos", "Acessível"], "preco": 190000, "quartos": 5, "banheiros": 2, "vagas": null, "area": 360, "terreno": false, "coord": [-8.6568501, -36.3181439], "link": "https://danilodss.remax.com.br/pt-br/imoveis/casa/venda/lajedo/850131018-89", "fotos": ["img/89_00.jpg", "img/89_01.jpg", "img/89_02.jpg", "img/89_03.jpg", "img/89_04.jpg", "img/89_05.jpg"], "mini": "img/89_capa.jpg"}, {"id": "850131018-97", "cod": "97", "titulo": "Casa de 270 m² no Centro", "local": "R. Vicente Ferreira · Centro", "tags": ["Desocupada"], "filtros": ["medio"], "texto": "Casa no Centro, na Rua Vicente Ferreira, com 270 m² e 9 cômodos, sendo 2 quartos. Tem jardim amplo, garagem e aquecimento solar, aceita pets e é acessível para cadeirantes.", "extras": ["Jardim amplo", "Garagem", "Aquecimento solar", "Aceita pets", "Acessível"], "preco": 170000, "quartos": 2, "banheiros": null, "vagas": null, "area": 270, "terreno": false, "coord": null, "link": "https://danilodss.remax.com.br/pt-br/imoveis/casa/venda/lajedo/850131018-97", "fotos": ["img/97_00.jpg", "img/97_01.jpg", "img/97_02.jpg", "img/97_03.jpg", "img/97_04.jpg", "img/97_05.jpg"], "mini": "img/97_capa.jpg"}, {"id": "850131018-99", "cod": "99", "titulo": "Casa de 3 quartos no Planalto", "local": "Bairro Planalto", "tags": ["Ótimo preço"], "filtros": ["medio"], "texto": "Casa no Bairro Planalto, com 126 m², 8 cômodos, 3 quartos, banheiro, jardim e garagem. Hoje o proprietário mora nela. Lugar tranquilo e aceita pets.", "extras": ["Garagem", "Jardim", "Aceita pets"], "preco": 110000, "quartos": 3, "banheiros": 1, "vagas": 1, "area": 126, "terreno": false, "coord": [-8.6609153, -36.3235279], "link": "https://danilodss.remax.com.br/pt-br/imoveis/casa/venda/lajedo/850131018-99", "fotos": ["img/99_00.jpg", "img/99_01.jpg", "img/99_02.jpg", "img/99_03.jpg", "img/99_04.jpg", "img/99_05.jpg", "img/99_06.jpg", "img/99_07.jpg", "img/99_08.jpg", "img/99_09.jpg", "img/99_10.jpg", "img/99_11.jpg", "img/99_12.jpg"], "mini": "img/99_capa.jpg"}, {"id": "850131018-111", "cod": "111", "titulo": "Casa em frente à praça", "local": "Bairro Poço · em frente à praça", "tags": ["Pet friendly"], "filtros": ["ate100"], "texto": "Casa no Bairro Poço, de frente para uma praça tranquila. Tem 175 m², garagem, varanda, quintal amplo e cozinha, perto de comércio, escolas e transporte. Hoje está alugada.", "extras": ["Varanda", "Quintal amplo", "Garagem", "Vista livre", "Aceita pets"], "preco": 100000, "quartos": null, "banheiros": null, "vagas": 1, "area": 175, "terreno": false, "coord": null, "link": "https://danilodss.remax.com.br/pt-br/imoveis/casa/venda/lajedo/em-frente-a-praca/850131018-111", "fotos": ["img/111_00.jpg", "img/111_01.jpg", "img/111_02.jpg", "img/111_03.jpg", "img/111_04.jpg", "img/111_05.jpg"], "mini": "img/111_capa.jpg"}, {"id": "850131018-92", "cod": "92", "titulo": "Casa no Centro, perto de tudo", "local": "Centro", "tags": ["Desocupada"], "filtros": ["ate100"], "texto": "Casa desocupada no Centro, boa para morar ou investir. São 156 m², 8 cômodos, 2 quartos, banheiro e jardim. Tem gás individual, aceita pets e é acessível para cadeirantes.", "extras": ["Jardim", "Gás individual", "Aceita pets", "Acessível"], "preco": 90000, "quartos": 2, "banheiros": 1, "vagas": null, "area": 156, "terreno": false, "coord": [-8.6565166, -36.317717], "link": "https://danilodss.remax.com.br/pt-br/imoveis/casa/venda/lajedo/850131018-92", "fotos": ["img/92_00.jpg", "img/92_01.jpg", "img/92_02.jpg", "img/92_03.jpg", "img/92_04.jpg", "img/92_05.jpg"], "mini": "img/92_capa.jpg"}, {"id": "850131018-104", "cod": "104", "titulo": "Casinha com piscina e churrasqueira", "local": "R. Antônio Dourado Cavalcante, 01", "tags": ["Ótimo preço", "Lazer"], "filtros": ["ate100", "piscina"], "texto": "Casinha de 100 m² com piscina, churrasqueira e área de lazer coberta. Tem 1 quarto e 1 banheiro. Serve para fins de semana e férias em família ou como investimento.", "extras": ["Piscina", "Churrasqueira", "Área de lazer", "Desocupada"], "preco": 85000, "quartos": 1, "banheiros": 1, "vagas": null, "area": 100, "terreno": false, "coord": [-8.6539847, -36.3074487], "link": "https://danilodss.remax.com.br/pt-br/imoveis/casa/venda/lajedo/01-antanio-douradocavalcante/850131018-104", "fotos": ["img/104_00.jpg", "img/104_01.jpg", "img/104_02.jpg", "img/104_03.jpg", "img/104_04.jpg", "img/104_05.jpg", "img/104_06.jpg"], "mini": "img/104_capa.jpg"}, {"id": "850131018-85", "cod": "85", "titulo": "Terreno de 200 m² na BR-423", "local": "BR-423 · Lajedo", "tags": ["Ótimo preço"], "filtros": ["ate100", "terreno"], "texto": "Terreno de 200 m² na beira da BR-423, em Lajedo. Serve para comércio ou para construir uma casa. É o menor valor da carteira.", "extras": ["Beira de rodovia", "Uso comercial ou residencial"], "preco": 20000, "quartos": null, "banheiros": null, "vagas": null, "area": 200, "terreno": true, "coord": null, "link": "https://danilodss.remax.com.br/pt-br/imoveis/terreno/venda/lajedo/850131018-85", "fotos": ["img/85_00.jpg", "img/85_01.jpg"], "mini": "img/85_capa.jpg"}];
 const IG = {"usuario": "danilo_consultor_imoveis", "foto": "", "bio": "", "seguidores": "", "posts": []};
@@ -578,10 +563,6 @@ FILTROS.forEach(F => {
   b.onclick = () => { SOM.filtro(); filtro = F.id; pintaGrid(); document.getElementById('imoveis').scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'}); };
   tabs.appendChild(b);
 });
-const mapaTab = document.createElement('button');
-mapaTab.className = 'tab'; mapaTab.type = 'button'; mapaTab.innerHTML = 'Mapa';
-mapaTab.onclick = () => { SOM.filtro(); $('#mapa-sec').scrollIntoView({behavior: CALMO ? 'auto' : 'smooth'}); };
-tabs.appendChild(mapaTab);
 
 function card(i, k){
   return `<article class="card" style="--i:${k}" data-id="${i.id}">
@@ -713,34 +694,6 @@ $('#ag-form').onsubmit = e => {
 
 pintaGrid();
 
-/* mapa */
-(function(){
-  const pts = IMOVEIS.filter(i=>i.coord);
-  if (!window.L || !pts.length) { $('#mapa-sec').hidden = true; return; }
-  const m = L.map('mapa', {scrollWheelZoom:false, attributionControl:true});
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:19, attribution:'© OpenStreetMap'}).addTo(m);
-  const g = pts.map(i => L.marker(i.coord, {icon: L.divIcon({className:'', html:'', iconSize:[0,0]})}).on('click', () => abrir(i.id)).addTo(m));
-  /* escolhe para que lado cada preço abre, sem um tampar o outro */
-  function arruma(){
-    const caixas = [], W = 76, H = 28, G = 6;
-    const lados = {top:[-W/2,-H-G], bottom:[-W/2,G], right:[G+4,-H/2], left:[-W-G-4,-H/2]};
-    g.forEach((mk, k) => {
-      const p = m.latLngToContainerPoint(mk.getLatLng());
-      let melhor = 'top', menor = 1e9;
-      for (const [lado, [dx, dy]] of Object.entries(lados)) {
-        const c = {x: p.x + dx, y: p.y + dy};
-        const sob = caixas.reduce((acc, b) => acc + Math.max(0, Math.min(c.x + W, b.x + W) - Math.max(c.x, b.x)) * Math.max(0, Math.min(c.y + H, b.y + H) - Math.max(c.y, b.y)), 0);
-        if (sob < menor) { menor = sob; melhor = lado; }
-        if (sob === 0) break;
-      }
-      caixas.push({x: p.x + lados[melhor][0], y: p.y + lados[melhor][1]});
-      mk.unbindTooltip().bindTooltip(curto(pts[k].preco), {permanent:true, direction:melhor, className:'pin', interactive:true});
-      const el = mk.getTooltip().getElement(); if (el) { el.style.cursor = 'pointer'; el.onclick = () => { SOM.abre(); abrir(pts[k].id); }; }
-    });
-  }
-  m.fitBounds(L.featureGroup(g).getBounds().pad(.25));
-  arruma(); m.on('zoomend', arruma);
-})();
 </script>
 </body>
 </html>
