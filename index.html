@@ -1,0 +1,746 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Danilo · RE/MAX SHOW</title>
+<meta name="description" content="Imóveis à venda em Lajedo-PE com o corretor Danilo, da RE/MAX SHOW. Veja as fotos, monte sua lista e agende a visita pelo WhatsApp.">
+<meta name="theme-color" content="#003DA5">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Danilo · Imóveis em Lajedo · RE/MAX SHOW">
+<meta property="og:description" content="Casas e terreno à venda em Lajedo-PE. Veja as fotos e agende a visita pelo WhatsApp.">
+<meta property="og:image" content="SITE_URL_AQUI/img/og.jpg">
+<meta property="og:url" content="SITE_URL_AQUI/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
+<style>
+/* Layout: faixa vermelha → topo azul com o corretor e a vitrine → cartão de contato → abas fixas → cards dos imóveis
+   → mapa → escritório → lista de visita fixa embaixo → folhas (detalhes do imóvel, agendar no WhatsApp) */
+:root{
+  --blue:#003DA5; --blue-d:#00256B; --blue-dd:#001A4D; --red:#DC1C2E; --red-d:#A3101F;
+  --ink:#0B1B3A; --muted:#5A6785; --paper:#F3F6FB; --line:#DCE3EF; --sky:#BFD3F5;
+  --green:#1FA855; --green-d:#137A3C;
+  --title:"Archivo Black","Arial Black",Impact,sans-serif;
+  --body:"Inter","Segoe UI",system-ui,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;background:var(--blue-d)}
+body{margin:0;min-height:100vh;background:linear-gradient(172deg,var(--blue) 0%,var(--blue-d) 62%,var(--blue-dd) 100%);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.45;overflow-x:hidden;-webkit-tap-highlight-color:transparent}
+.wrap{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+a{color:inherit}
+button{font-family:inherit}
+img{max-width:100%}
+:focus-visible{outline:3px solid #fff;outline-offset:3px;border-radius:8px}
+.co :focus-visible,.card :focus-visible,.info :focus-visible{outline-color:var(--ink)}
+@keyframes rise{from{transform:translateY(18px)}to{transform:none}}
+@keyframes pop{0%{transform:translateY(24px) scale(.97)}100%{transform:none}}
+@keyframes bump{50%{transform:scale(1.12)}}
+@keyframes up{from{transform:translateY(100%)}to{transform:none}}
+@keyframes letra{from{transform:translateY(70%) rotate(10deg)}to{transform:none}}
+@keyframes carimbo{0%{transform:rotate(-16deg) scale(1.5)}60%{transform:rotate(1deg) scale(.96)}100%{transform:rotate(-2.5deg) scale(1)}}
+@keyframes kb{from{transform:scale(1) translate(0,0)}to{transform:scale(1.12) translate(-2%,-1.5%)}}
+@keyframes chama{0%,86%,100%{transform:none}89%{transform:rotate(-4deg) scale(1.04)}92%{transform:rotate(4deg) scale(1.04)}95%{transform:rotate(-2deg)}}
+@keyframes cai{0%{transform:translateY(-26px)}70%{transform:translateY(3px)}100%{transform:none}}
+
+/* TOPO */
+.hero{color:#fff;padding-top:env(safe-area-inset-top,0px)}
+.topline{background:var(--red);color:#fff;font:600 12px var(--body);letter-spacing:.16em;text-transform:uppercase;padding:6px 52px;display:flex;align-items:center;justify-content:center;position:relative;min-height:38px}
+.topline>span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.som{position:absolute;right:max(10px,env(safe-area-inset-right,0px));top:50%;transform:translateY(-50%);width:30px;height:30px;border-radius:50%;border:0;background:rgba(255,255,255,.2);color:#fff;display:grid;place-items:center;cursor:pointer;padding:0}
+.som svg{width:17px;height:17px}
+.som .off{display:none}.som[aria-pressed="false"] .on{display:none}.som[aria-pressed="false"] .off{display:block}
+@media (max-width:420px){.topline{justify-content:flex-start;padding-left:16px;letter-spacing:.1em}}
+.topline i{font-style:normal;opacity:.6;margin:0 8px}
+.hero-in{display:grid;grid-template-columns:1fr;gap:26px;padding-block:28px 34px;align-items:center}
+.who{display:flex;align-items:center;gap:14px;animation:rise .6s cubic-bezier(.2,1,.3,1) both}
+.mono{overflow:hidden;flex:none;width:clamp(64px,17vw,84px);aspect-ratio:1;border-radius:22px;background:#fff;color:var(--blue);display:grid;place-items:center;font:400 clamp(34px,9vw,46px)/1 var(--title);box-shadow:6px 6px 0 var(--red)}
+.who small{display:block;font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--sky)}
+.who b{display:block;font-weight:600;font-size:15px;color:#fff}
+h1{margin:18px 0 0;font:400 clamp(44px,13vw,86px)/.92 var(--title);letter-spacing:-.01em}
+h1 .lin{display:inline-block;overflow:hidden;padding-bottom:.06em;vertical-align:bottom}
+h1 .lt{display:inline-block;animation:letra .7s cubic-bezier(.2,1.3,.4,1) both;animation-delay:calc(.1s + var(--k)*45ms)}
+.mono img{width:100%;height:100%;object-fit:cover;display:block}
+h1 .tag{color:var(--red);background:#fff;padding:0 .12em;display:inline-block;transform:rotate(-2.5deg);margin-top:.08em;animation:carimbo .6s .55s cubic-bezier(.2,1.2,.4,1) both}
+.lead{margin:16px 0 0;font-size:clamp(17px,4.4vw,20px);color:#E3ECFB;max-width:30em;animation:rise .6s .16s cubic-bezier(.2,1,.3,1) both}
+.lead b{color:#fff}
+.cta-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px;animation:rise .6s .24s cubic-bezier(.2,1,.3,1) both}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;font:700 16px var(--body);text-decoration:none;border:0;border-radius:999px;padding:14px 22px;cursor:pointer;transition:transform .12s}
+.btn:active{transform:translateY(2px)}
+.btn svg{width:21px;height:21px;flex:none}
+.btn-wa{background:var(--green);color:#fff;box-shadow:0 4px 0 var(--green-d)}
+.hero .btn-wa{animation:chama 7s 3s infinite}
+.btn-ig{background:#fff;color:#C13584;box-shadow:0 4px 0 #F2C6DD}
+.btn-w{background:#fff;color:var(--blue);box-shadow:0 4px 0 var(--sky)}
+.btn-red{background:var(--red);color:#fff;box-shadow:0 4px 0 var(--red-d)}
+
+.vitrine{position:relative;margin:4px 6px 10px;animation:rise .7s .2s cubic-bezier(.2,1,.3,1) both;cursor:pointer;border:0;padding:0;background:none;text-align:left;color:inherit;display:block;width:calc(100% - 12px)}
+.vitrine .pic{display:block;border-radius:24px;overflow:hidden;border:6px solid #fff;transform:perspective(900px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) rotate(1.6deg);transition:transform .25s ease-out;box-shadow:0 18px 40px rgba(0,10,40,.45);aspect-ratio:4/3;background:var(--blue-dd)}
+.vitrine img{width:100%;height:100%;object-fit:cover;display:block;animation:kb 16s ease-in-out infinite alternate}
+.vitrine .preco{animation:carimbo .6s .9s cubic-bezier(.2,1.2,.4,1) both}
+.vitrine .preco{position:absolute;left:-6px;bottom:22px;font-size:clamp(20px,5.4vw,26px)}
+.vitrine .rot{position:absolute;right:4px;top:-12px;background:#fff;color:var(--blue);font:800 12px var(--body);letter-spacing:.1em;text-transform:uppercase;border-radius:999px;padding:7px 12px;transform:rotate(3deg)}
+
+/* CONTATO */
+.info{background:#fff;color:var(--ink);border-radius:22px;display:grid;grid-template-columns:1fr;overflow:hidden;box-shadow:0 10px 24px rgba(0,10,40,.3);margin-bottom:26px}
+.info>*{display:flex;gap:12px;align-items:center;padding:13px 16px;min-width:0;text-decoration:none}
+.info>*+*{border-top:1px dashed var(--line)}
+.info svg{width:26px;height:26px;flex:none;color:var(--blue)}
+.info small{display:block;text-transform:uppercase;letter-spacing:.1em;font-size:11px;font-weight:700;color:var(--muted)}
+.info strong{font-size:16px;overflow-wrap:anywhere;line-height:1.25}
+
+/* ABAS */
+.tabs-bar{position:sticky;top:0;z-index:15;padding-top:env(safe-area-inset-top,0px);background:var(--blue);box-shadow:0 6px 14px rgba(0,10,40,.3)}
+.tabs{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-block:10px;scroll-padding-inline:16px}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:none;display:inline-flex;align-items:center;gap:7px;font:700 14px var(--body);border:2px solid rgba(255,255,255,.75);background:transparent;color:#fff;border-radius:999px;padding:7px 14px;cursor:pointer;transition:background .2s,color .2s}
+.tab em{font-style:normal;font-size:12px;min-width:20px;height:20px;line-height:20px;border-radius:999px;background:rgba(255,255,255,.2);text-align:center;padding:0 5px}
+.tab[aria-selected="true"]{background:#fff;color:var(--blue);border-color:#fff}
+.tab[aria-selected="true"] em{background:var(--red);color:#fff}
+
+/* IMÓVEIS */
+.lista{padding-block:8px 40px}
+.sec-h{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 14px;margin:26px 0 16px;color:#fff}
+.sec-h h2{margin:0;font:400 clamp(30px,8vw,46px)/1 var(--title)}
+.sec-h p{margin:0;font-weight:600;color:var(--sky)}
+.grid{display:grid;grid-template-columns:1fr;gap:16px}
+.card{background:#fff;border-radius:24px;overflow:hidden;display:flex;flex-direction:column;min-width:0;box-shadow:0 7px 0 rgba(0,15,60,.35);transform:translateY(46px) scale(.96);transition:transform .75s cubic-bezier(.2,1.15,.3,1),box-shadow .25s;transition-delay:calc(var(--c,0)*70ms)}
+.card.in{transform:none}
+.card .ph .preco{transform:rotate(-16deg) scale(1.5)}
+.card.in .ph .preco{animation:carimbo .55s cubic-bezier(.2,1.2,.4,1) both;animation-delay:calc(.25s + var(--c,0)*70ms)}
+@media (hover:hover){.card.in:hover{transform:translateY(-6px);box-shadow:0 13px 0 rgba(0,15,60,.35);transition-delay:0s}}
+.card[hidden]{display:none}
+.ph{position:relative;display:block;border:0;padding:0;margin:0;cursor:pointer;aspect-ratio:3/2;background:var(--paper);overflow:hidden}
+.ph img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s}
+.ph:hover img{transform:scale(1.04)}
+.preco{display:inline-block;background:var(--red);color:#fff;font:400 20px/1 var(--title);border-radius:12px;padding:9px 13px 8px;transform:rotate(-2.5deg);font-variant-numeric:tabular-nums;white-space:nowrap;box-shadow:0 4px 0 var(--red-d)}
+.ph .preco{position:absolute;left:12px;bottom:14px}
+.cnt{position:absolute;right:10px;top:10px;display:inline-flex;align-items:center;gap:5px;background:rgba(11,27,58,.78);color:#fff;font:700 13px var(--body);border-radius:999px;padding:5px 10px}
+.cnt svg{width:15px;height:15px}
+.cod{position:absolute;left:10px;top:10px;background:#fff;color:var(--blue);font:800 11px var(--body);letter-spacing:.08em;border-radius:999px;padding:5px 9px}
+.cb{padding:14px 16px 16px;display:flex;flex-direction:column;gap:8px;flex:1}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:700 11px var(--body);letter-spacing:.06em;text-transform:uppercase;border-radius:999px;padding:4px 9px;background:#E7EEFB;color:var(--blue)}
+.chip.r{background:#FDE6E8;color:var(--red-d)}
+.card h3{margin:0;font:400 21px/1.08 var(--title);color:var(--ink)}
+.loc{margin:0;display:flex;gap:6px;align-items:flex-start;color:var(--muted);font-size:14px;font-weight:500}
+.loc svg{width:16px;height:16px;flex:none;margin-top:2px;color:var(--red)}
+.specs{list-style:none;margin:2px 0 0;padding:10px 0 0;border-top:1px dashed var(--line);display:flex;flex-wrap:wrap;gap:6px 14px}
+.specs li{display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:14px;color:var(--ink)}
+.specs li span{font-weight:500;color:var(--muted)}
+.specs svg{width:19px;height:19px;color:var(--blue);flex:none}
+.acts{display:flex;gap:8px;margin-top:auto;padding-top:8px}
+.ver{flex:1;border:2px solid var(--blue);background:#fff;color:var(--blue);font:700 15px var(--body);border-radius:999px;padding:10px 12px;cursor:pointer}
+.add{flex:none;display:inline-flex;align-items:center;gap:6px;border:0;background:var(--blue);color:#fff;font:700 15px var(--body);border-radius:999px;padding:10px 15px;cursor:pointer;box-shadow:0 3px 0 var(--blue-dd);transition:transform .12s}
+.add:active{transform:translateY(2px)}
+.add svg{width:17px;height:17px}
+.add.ok{background:var(--red);box-shadow:0 3px 0 var(--red-d);animation:bump .35s}
+.vazio{color:#fff;font-weight:600;text-align:center;padding:30px 0}
+
+/* MAPA */
+.mapa-sec{padding-bottom:10px}
+#mapa{height:min(420px,70vh);border-radius:22px;border:5px solid #fff;overflow:hidden;background:#DCE6F5;box-shadow:0 10px 24px rgba(0,10,40,.3)}
+.mapa-nota{margin:10px 0 0;color:var(--sky);font-size:14px;font-weight:500}
+.pin{background:var(--red)!important;color:#fff!important;border:0!important;border-radius:10px!important;font:400 13px/1 var(--title)!important;padding:7px 9px 6px!important;box-shadow:0 3px 0 var(--red-d)!important;white-space:nowrap}
+.pin::before{display:none}
+.pin-in{animation:cai .5s cubic-bezier(.2,1.3,.4,1) both}
+.prog{position:fixed;left:0;top:0;height:4px;width:100%;background:var(--red);transform-origin:0 50%;transform:scaleX(0);z-index:40;pointer-events:none}
+.voa{position:fixed;z-index:60;pointer-events:none;border-radius:12px;object-fit:cover;box-shadow:0 8px 20px rgba(0,0,0,.35)}
+/* INSTAGRAM */
+.ig{margin:34px 0 0;background:#fff;border-radius:24px;padding:18px;box-shadow:0 7px 0 rgba(0,15,60,.35)}
+.ig-top{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.ig-av{width:74px;height:74px;border-radius:50%;padding:3px;background:conic-gradient(#F58529,#DD2A7B,#8134AF,#515BD4,#F58529);flex:none}
+.ig-av span{display:grid;place-items:center;width:100%;height:100%;border-radius:50%;border:3px solid #fff;background:var(--blue);color:#fff;font:400 30px var(--title);overflow:hidden}
+.ig-av img{width:100%;height:100%;object-fit:cover}
+.ig-id{flex:1;min-width:170px}
+.ig-id b{display:block;font:400 clamp(15px,4.3vw,19px)/1.15 var(--title);color:var(--ink);overflow-wrap:anywhere}
+.ig-id small{display:block;color:var(--muted);font-weight:600;margin-top:2px}
+.ig-bio{margin:12px 0 0;color:#2A3858;white-space:pre-line}
+.ig-bio[hidden],.ig-grid[hidden]{display:none}
+.ig-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-top:14px;border-radius:14px;overflow:hidden}
+.ig-grid a{display:block;aspect-ratio:1;overflow:hidden;background:var(--paper)}
+.ig-grid img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s}
+.ig-grid a:hover img{transform:scale(1.07)}
+@media (max-width:420px){.ig-top .btn{flex:1 1 100%}}
+.leaflet-container{font-family:var(--body)}
+
+/* ESCRITÓRIO */
+.loja{margin:24px 0 0;background:#fff;border-radius:24px;overflow:hidden;display:grid;grid-template-columns:1fr;box-shadow:0 7px 0 rgba(0,15,60,.35)}
+.loja img{width:100%;height:100%;max-height:260px;object-fit:cover;display:block}
+.loja-b{padding:20px 20px 22px;display:flex;flex-direction:column;gap:10px}
+.loja-b h2{margin:0;font:400 28px/1.05 var(--title);color:var(--blue)}
+.loja-b p{margin:0;color:var(--muted)}
+.loja-b .cta-row{animation:none;margin-top:6px}
+
+footer{color:var(--sky);text-align:center;padding-block:34px 130px;font-size:14px}
+footer b{display:block;font:400 22px var(--title);color:#fff;margin-bottom:4px}
+footer p{margin:4px 0 0}
+
+/* LISTA DE VISITA */
+.bag{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--ink);color:#fff;padding-bottom:env(safe-area-inset-bottom,0px);border-radius:22px 22px 0 0;box-shadow:0 -8px 24px rgba(0,10,40,.35);transform:translateY(110%);transition:transform .35s cubic-bezier(.2,1,.3,1)}
+.bag:not(.show){visibility:hidden;transition:transform .35s,visibility 0s .35s}
+.bag.show{transform:none}
+.bag-row{display:flex;gap:12px;align-items:center;padding-block:12px}
+.bag-ico{position:relative;width:46px;height:46px;flex:none;border-radius:14px;background:var(--blue);display:grid;place-items:center}
+.bag-ico svg{width:24px;height:24px;color:#fff}
+.bag-ico b{position:absolute;top:-6px;right:-6px;min-width:22px;height:22px;border-radius:999px;background:var(--red);color:#fff;font:800 13px/22px var(--body);text-align:center;padding:0 5px}
+.bag-info{flex:1;min-width:0}
+.bag-info strong{display:block;font-size:16px}
+.bag-info small{display:block;color:var(--sky);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.btn-fin{padding:12px 16px;white-space:nowrap;font-size:15px}
+.bump{animation:bump .3s}
+
+/* FOLHAS */
+.co-bg{position:fixed;inset:0;z-index:30;background:rgba(5,15,40,.7);display:flex;align-items:flex-end;justify-content:center}
+.co-bg[hidden]{display:none!important}
+.co{background:var(--paper);width:min(720px,100%);max-height:94dvh;overflow:auto;border-radius:26px 26px 0 0;padding-bottom:calc(18px + env(safe-area-inset-bottom,0px));animation:up .3s cubic-bezier(.2,1,.3,1) both;overscroll-behavior:contain}
+@media (min-width:760px){.co-bg{align-items:center;padding:20px}.co{border-radius:26px;max-height:92dvh}}
+.co-pad{padding-inline:max(18px,env(safe-area-inset-left,0px))}
+.co-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding-top:18px}
+.co-head h2{margin:0;font:400 26px/1.08 var(--title);color:var(--ink)}
+.x{flex:none;width:38px;height:38px;border-radius:50%;border:0;background:#fff;color:var(--red);font:800 22px/1 var(--body);cursor:pointer;box-shadow:0 2px 0 var(--line)}
+.gal{position:relative;background:var(--ink)}
+.gal-track{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;aspect-ratio:3/2;max-height:62dvh}
+.gal-track::-webkit-scrollbar{display:none}
+.gal-track img{flex:none;width:100%;height:100%;object-fit:contain;scroll-snap-align:center;background:var(--ink)}
+.gal .x{position:absolute;right:12px;top:12px;z-index:2}
+.gal-n{position:absolute;left:12px;top:14px;background:rgba(11,27,58,.78);color:#fff;font:700 13px var(--body);border-radius:999px;padding:5px 10px}
+.gal-a{position:absolute;top:50%;transform:translateY(-50%);width:42px;height:42px;border-radius:50%;border:0;background:#fff;color:var(--blue);font:800 22px/1 var(--body);cursor:pointer;display:none;box-shadow:0 3px 10px rgba(0,0,0,.3)}
+.gal-a.p{left:12px}.gal-a.n{right:12px}
+@media (hover:hover) and (min-width:760px){.gal-a{display:grid;place-items:center}}
+.thumbs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:10px 0 2px}
+.thumbs button{flex:none;width:64px;height:46px;border-radius:10px;overflow:hidden;border:3px solid transparent;padding:0;cursor:pointer;background:none;opacity:.6}
+.thumbs button[aria-current="true"]{border-color:var(--red);opacity:1}
+.thumbs img{width:100%;height:100%;object-fit:cover;display:block}
+.d-preco{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:14px 0 6px}
+.d-specs{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin:12px 0}
+.d-specs div{background:#fff;border-radius:14px;padding:10px 12px;display:flex;align-items:center;gap:10px;border:1px solid var(--line)}
+.d-specs svg{width:24px;height:24px;color:var(--blue);flex:none}
+.d-specs b{display:block;font:400 18px/1 var(--title)}
+.d-specs small{color:var(--muted);font-size:12px;font-weight:600}
+.d-txt{margin:6px 0 12px;color:#2A3858;font-size:16px}
+.leg{font:800 12px var(--body);text-transform:uppercase;letter-spacing:.12em;color:var(--red);margin:14px 0 8px}
+.extras{display:flex;flex-wrap:wrap;gap:6px}
+.extras span{background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 11px;font-weight:600;font-size:14px}
+.d-acts{display:flex;flex-direction:column;gap:10px;margin-top:18px}
+.d-acts .btn{width:100%}
+.d-link{display:block;text-align:center;margin-top:12px;color:var(--muted);font-size:14px;font-weight:600}
+
+.co form{display:flex;flex-direction:column;gap:16px;margin-top:12px}
+.co fieldset{border:0;margin:0;padding:0;min-width:0}
+.co legend{font:800 12px var(--body);text-transform:uppercase;letter-spacing:.12em;color:var(--red);margin-bottom:8px;padding:0}
+.ag-lista{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.ag-lista li{display:flex;gap:10px;align-items:center;background:#fff;border-radius:14px;padding:8px;border:1px solid var(--line)}
+.ag-lista img{width:64px;height:48px;object-fit:cover;border-radius:10px;flex:none}
+.ag-lista span{flex:1;min-width:0;font-weight:700;font-size:14px;line-height:1.25}
+.ag-lista small{display:block;color:var(--muted);font-weight:600}
+.ag-lista button{flex:none;width:32px;height:32px;border-radius:50%;border:0;background:#FDE6E8;color:var(--red-d);font:800 18px/1 var(--body);cursor:pointer}
+.f{display:flex;flex-direction:column;gap:5px}
+.f span{font-size:14px;font-weight:700;color:var(--muted)}
+.f input{font:500 16px var(--body);color:var(--ink);background:#fff;border:2px solid var(--line);border-radius:14px;padding:12px 14px;width:100%}
+.f input:focus{outline:none;border-color:var(--blue)}
+.f.erro input{border-color:var(--red);background:#FFF0F1}
+.opts{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.opts label{min-width:0;position:relative}
+.opts input{position:absolute;opacity:0;pointer-events:none}
+.opts span{display:flex;align-items:center;justify-content:center;text-align:center;border:2px solid var(--line);background:#fff;border-radius:14px;padding:11px 8px;font-weight:700;font-size:15px;cursor:pointer;height:100%}
+.opts input:checked+span{border-color:var(--blue);background:var(--blue);color:#fff}
+.opts input:focus-visible+span{outline:3px solid var(--ink);outline-offset:2px}
+
+@media (max-width:380px){.cta-row .btn{flex:1 1 100%}}
+@media (max-height:520px) and (orientation:landscape){.co{max-height:100dvh;border-radius:18px 18px 0 0}.gal-track{max-height:78dvh}.hero-in{padding-block:18px 22px}}
+@media (min-width:700px){
+  .vitrine{max-width:560px}
+  .grid{grid-template-columns:repeat(2,1fr)}
+  .info{grid-template-columns:repeat(2,1fr)}
+  .info>*{border-top:0!important}
+  .info>*:nth-child(n+3){border-top:1px dashed var(--line)!important}
+  .info>*:nth-child(even){border-left:1px dashed var(--line)}
+  .ig-grid{grid-template-columns:repeat(6,1fr)}
+  .loja{grid-template-columns:minmax(0,.9fr) 1.1fr}
+  .loja img{max-height:none}
+}
+@media (min-width:980px){
+  .vitrine{max-width:none}
+  .hero-in{grid-template-columns:1.05fr .95fr;gap:40px;padding-block:44px 52px}
+  .grid{grid-template-columns:repeat(3,1fr)}
+  .info{grid-template-columns:repeat(4,1fr)}
+  .info>*{border-top:0!important;border-left:1px dashed var(--line)}
+  .info>*:first-child{border-left:0}
+  .bag-row{max-width:720px;margin:0 auto}
+}
+@media (max-width:359px){.acts{flex-direction:column}.add{justify-content:center}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}html{scroll-behavior:auto}.card{transform:none}.card .ph .preco{transform:rotate(-2.5deg)}}
+@media print{.card{transform:none}.bag,.tabs-bar,.prog,.som{display:none}}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-wa" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1-.7-.3-1.4-.7-2-1.3-.6-.5-1-1.1-1.4-1.8-.1-.2 0-.4.1-.5l.4-.4.3-.5v-.5l-.8-1.9c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.7.7-1 1.5-1 2.4.1 1 .5 2 1.1 2.8 1.2 1.7 2.6 3 4.4 3.8 1.6.7 2.3.7 3.1.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.2-.3-.2-.6-.4Z"/></symbol>
+  <symbol id="i-tel" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 6 6L16 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2Z"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5" fill="currentColor"/></symbol>
+  <symbol id="i-cama" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M3 19v-9m18 9v-5H3m0-2h18v2M7 12V9a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v3"/></symbol>
+  <symbol id="i-banho" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M3 12h18v2a5 5 0 0 1-5 5H8a5 5 0 0 1-5-5v-2Zm2 0V6a2 2 0 0 1 4 0M7 19l-1 2m12-2 1 2"/></symbol>
+  <symbol id="i-carro" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M4 16v-4l2-5h12l2 5v4H4Zm0 0v3h3v-3m10 0v3h3v-3M4 12h16"/><circle cx="7.5" cy="14" r=".6" fill="currentColor"/><circle cx="16.5" cy="14" r=".6" fill="currentColor"/></symbol>
+  <symbol id="i-area" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M4 4h16v16H4z"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M8 4v3m4-3v2m4-2v3M4 8h3m-3 4h2m-2 4h3"/></symbol>
+  <symbol id="i-foto" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M3 7h4l2-3h6l2 3h4v13H3z"/><circle cx="12" cy="13" r="3.5" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+  <symbol id="i-casa" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M3 11 12 4l9 7v9h-6v-6H9v6H3z"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M4 6h16v14H4zM4 10h16M8 3v4m8-4v4"/></symbol>
+  <symbol id="i-mais" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-ok" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-ig" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.3" cy="6.7" r="1.2" fill="currentColor"/></symbol>
+  <symbol id="i-som" viewBox="0 0 24 24"><path fill="currentColor" d="M4 9h4l5-4v14l-5-4H4z"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M16 9a4 4 0 0 1 0 6m2.5-8.5a7.5 7.5 0 0 1 0 11"/></symbol>
+  <symbol id="i-mudo" viewBox="0 0 24 24"><path fill="currentColor" d="M4 9h4l5-4v14l-5-4H4z"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="m16 9 5 6m0-6-5 6"/></symbol>
+  <symbol id="i-selo" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M12 3 4 6v6c0 4.5 3.4 8 8 9 4.6-1 8-4.5 8-9V6l-8-3Z"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="m8.5 12 2.5 2.5 4.5-5"/></symbol>
+</svg>
+
+<div class="prog" id="prog"></div>
+<header class="hero">
+  <div class="topline"><span>RE/MAX SHOW<i>/</i>Lajedo – PE<i>/</i>CRECI 22099</span><button class="som" id="som" type="button" aria-pressed="true" aria-label="Efeitos sonoros ligados"><svg class="on"><use href="#i-som"/></svg><svg class="off"><use href="#i-mudo"/></svg></button></div>
+  <div class="wrap hero-in">
+    <div>
+      <div class="who">
+        <div class="mono" id="mono" aria-hidden="true">D</div>
+        <div><small>Corretor associado</small><b>RE/MAX SHOW · Lajedo</b></div>
+      </div>
+      <h1 id="h1"><span class="lin" data-letras>Danilo</span><br><span class="tag">imóveis</span></h1>
+      <p class="lead"><b id="h-total">9 imóveis à venda</b> em Lajedo, de <b id="h-min"></b> a <b id="h-max"></b>. Veja as fotos, separe os que gostou e marque a visita pelo WhatsApp.</p>
+      <div class="cta-row">
+        <a class="btn btn-wa" id="cta-wa" target="_blank" rel="noopener"><svg><use href="#i-wa"/></svg>Falar no WhatsApp</a>
+        <a class="btn btn-w" href="#imoveis"><svg><use href="#i-casa"/></svg>Ver imóveis</a>
+        <a class="btn btn-ig" id="cta-ig" target="_blank" rel="noopener"><svg><use href="#i-ig"/></svg>Instagram</a>
+      </div>
+    </div>
+    <button class="vitrine" id="vitrine" type="button" aria-label="Ver o imóvel em destaque">
+      <span class="pic"><img id="vit-img" alt=""></span>
+      <span class="rot">Destaque</span>
+      <span class="preco" id="vit-preco"></span>
+    </button>
+  </div>
+  <div class="wrap">
+    <div class="info">
+      <a id="info-wa" target="_blank" rel="noopener"><svg><use href="#i-wa"/></svg><span><small>WhatsApp</small><strong>(87) 99824-0937</strong></span></a>
+      <a href="https://maps.google.com/?q=Avenida+19+de+Maio,+368,+Lajedo+-+PE" target="_blank" rel="noopener"><svg><use href="#i-pin"/></svg><span><small>Escritório</small><strong>Av. 19 de Maio, 368 · Centro</strong></span></a>
+      <a id="info-ig" target="_blank" rel="noopener"><svg><use href="#i-ig"/></svg><span><small>Instagram</small><strong id="info-ig-t"></strong></span></a>
+      <div><svg><use href="#i-selo"/></svg><span><small>Registro</small><strong>CRECI 22099</strong></span></div>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs-bar" aria-label="Filtrar imóveis">
+  <div class="wrap tabs" role="tablist" id="tabs"></div>
+</nav>
+
+<main class="wrap lista" id="imoveis">
+  <div class="sec-h"><h2 id="sec-t">Todos os imóveis</h2><p id="sec-n"></p></div>
+  <div class="grid" id="grid"></div>
+  <p class="vazio" id="vazio" hidden>Nenhum imóvel nesse filtro.</p>
+
+  <section class="mapa-sec" id="mapa-sec">
+    <div class="sec-h"><h2>No mapa</h2><p>toque no preço para abrir</p></div>
+    <div id="mapa" role="region" aria-label="Mapa dos imóveis em Lajedo"></div>
+    <p class="mapa-nota">Posições aproximadas. Algumas casas e o terreno da BR-423 não têm ponto no mapa: o endereço completo é passado na visita.</p>
+  </section>
+
+  <section class="ig" id="ig" aria-label="Instagram">
+    <div class="ig-top">
+      <div class="ig-av"><span id="ig-av">D</span></div>
+      <div class="ig-id"><b id="ig-user"></b><small id="ig-sub">Imóveis novos, dicas e bastidores das visitas</small></div>
+      <a class="btn btn-ig" id="ig-btn" target="_blank" rel="noopener" style="border:2px solid #C13584"><svg><use href="#i-ig"/></svg>Seguir no Instagram</a>
+    </div>
+    <p class="ig-bio" id="ig-bio" hidden></p>
+    <div class="ig-grid" id="ig-grid" hidden></div>
+  </section>
+
+  <section class="loja">
+    <img src="img/escritorio.jpg" alt="Fachada da imobiliária RE/MAX SHOW em Lajedo">
+    <div class="loja-b">
+      <h2>Venha conversar no escritório</h2>
+      <p>RE/MAX SHOW · Avenida 19 de Maio, 368, Centro, Lajedo – PE, 55385-000.</p>
+      <p>Escritório: (87) 3773-1220 · Danilo: (87) 99824-0937</p>
+      <div class="cta-row">
+        <a class="btn btn-wa" id="loja-wa" target="_blank" rel="noopener"><svg><use href="#i-wa"/></svg>WhatsApp</a>
+        <a class="btn btn-red" href="tel:+5587998240937"><svg><use href="#i-tel"/></svg>Ligar</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">
+  <b>Danilo · RE/MAX SHOW</b>
+  <p>Corretor associado · CRECI 22099 · RE/MAX SHOW CRECI 14123-J · Lajedo – PE</p>
+  <p>Preços e disponibilidade conforme o anúncio na RE/MAX; podem mudar sem aviso.</p>
+</footer>
+
+<div class="bag" id="bag" aria-live="polite">
+  <div class="wrap bag-row">
+    <div class="bag-ico" id="bag-ico"><svg><use href="#i-cal"/></svg><b id="bag-n">0</b></div>
+    <div class="bag-info"><strong>Lista de visita</strong><small id="bag-desc"></small></div>
+    <button class="btn btn-wa btn-fin" id="bag-go" type="button"><svg><use href="#i-wa"/></svg>Agendar</button>
+  </div>
+</div>
+
+<div class="co-bg" id="det-bg" hidden>
+  <div class="co" role="dialog" aria-modal="true" aria-labelledby="d-tit" id="det"></div>
+</div>
+<div class="co-bg" id="ag-bg" hidden>
+  <div class="co" role="dialog" aria-modal="true" aria-labelledby="ag-tit">
+    <div class="co-pad">
+      <div class="co-head"><h2 id="ag-tit">Agendar visita</h2><button class="x" type="button" data-fecha aria-label="Fechar">×</button></div>
+      <form id="ag-form" novalidate>
+        <fieldset><legend>Imóveis que você quer ver</legend><ul class="ag-lista" id="ag-lista"></ul></fieldset>
+        <label class="f" id="f-nome"><span>Seu nome</span><input id="ag-nome" autocomplete="name" placeholder="Como o Danilo te chama?"></label>
+        <fieldset><legend>Melhor horário</legend>
+          <div class="opts" id="ag-hora"></div></fieldset>
+        <fieldset><legend>Como pretende pagar</legend>
+          <div class="opts" id="ag-pag"></div></fieldset>
+        <button class="btn btn-wa" type="submit" style="width:100%;margin-top:4px"><svg><use href="#i-wa"/></svg>Enviar pelo WhatsApp</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script>
+const IMOVEIS = [{"id": "850131018-112", "cod": "112", "titulo": "Casa com piscina no Centro", "local": "R. Presidente Kennedy, 444 · Centro", "tags": ["Preço reduzido", "Desocupada"], "filtros": ["alto", "piscina"], "texto": "Casa ampla na Rua Presidente Kennedy, no Centro de Lajedo, agora com preço reduzido. São 351 m² e 13 cômodos: 4 quartos, banheiro e lavabo, piscina, jardim e garagem para 4 carros. Desocupada e pronta para a nova família.", "extras": ["Piscina", "Jardim", "Garagem p/ 4 carros", "Lavabo", "Gás individual", "Aceita pets", "Acessível"], "preco": 890000, "quartos": 4, "banheiros": 1, "vagas": 4, "area": 351, "terreno": false, "coord": [-8.6572534, -36.3225331], "link": "https://danilodss.remax.com.br/pt-br/imoveis/casa/venda/lajedo/444-presidente-kennedy/850131018-112", "fotos": ["img/112_00.jpg", "img/112_01.jpg", "img/112_02.jpg", "img/112_03.jpg", "img/112_04.jpg", "img/112_05.jpg", "img/112_06.jpg", "img/112_07.jpg", "img/112_08.jpg", "img/112_09.jpg", "img/112_10.jpg", "img/112_11.jpg"], "mini": "img/112_capa.jpg"}, {"id": "850131018-82", "cod": "82", "titulo": "Casa reformada com espaço gourmet", "local": "Lajedo · rua tranquila", "tags": ["Reformada", "Pronta para morar"], "filtros": ["medio"], "texto": "Casa contemporânea e reformada, com 279 m². Tem 4 quartos, cozinha ampla, biblioteca, espaço gourmet, quintal, jardim e garagem para 4 carros. Fica numa rua tranquila, perto de escolas, igreja, hospital e comércio.", "extras": ["Espaço gourmet", "Biblioteca", "Quintal", "Jardim", "Garagem p/ 4 carros", "Perto de escolas", "Gás individual", "Acessível"], "preco": 250000, "quartos": 4, "banheiros": 1, "vagas": 4, "area": 279, "terreno": false, "coord": [-8.6518832, -36.321642], "link": "https://danilodss.remax.com.br/pt-br/imoveis/casa/venda/lajedo/850131018-82", "fotos": ["img/82_00.jpg", "img/82_01.jpg", "img/82_02.jpg", "img/82_03.jpg", "img/82_04.jpg", "img/82_05.jpg", "img/82_06.jpg"], "mini": "img/82_capa.jpg"}, {"id": "850131018-89", "cod": "89", "titulo": "Casa grande no Centro, já alugada", "local": "R. Major Capitu · Centro", "tags": ["Renda de aluguel", "Ótimo preço"], "filtros": ["medio"], "texto": "Boa para investir: a casa já está alugada e garante renda desde o primeiro mês. São 360 m² num terreno de 12 x 30 m, com 10 cômodos, 5 quartos e 2 banheiros. Também serve para família grande.", "extras": ["Terreno 12 x 30 m", "Já alugada", "10 cômodos", "Acessível"], "preco": 190000, "quartos": 5, "banheiros": 2, "vagas": null, "area": 360, "terreno": false, "coord": [-8.6568501, -36.3181439], "link": "https://danilodss.remax.com.br/pt-br/imoveis/casa/venda/lajedo/850131018-89", "fotos": ["img/89_00.jpg", "img/89_01.jpg", "img/89_02.jpg", "img/89_03.jpg", "img/89_04.jpg", "img/89_05.jpg"], "mini": "img/89_capa.jpg"}, {"id": "850131018-97", "cod": "97", "titulo": "Casa de 270 m² no Centro", "local": "R. Vicente Ferreira · Centro", "tags": ["Desocupada"], "filtros": ["medio"], "texto": "Casa no Centro, na Rua Vicente Ferreira, com 270 m² e 9 cômodos, sendo 2 quartos. Tem jardim amplo, garagem e aquecimento solar, aceita pets e é acessível para cadeirantes.", "extras": ["Jardim amplo", "Garagem", "Aquecimento solar", "Aceita pets", "Acessível"], "preco": 170000, "quartos": 2, "banheiros": null, "vagas": null, "area": 270, "terreno": false, "coord": null, "link": "https://danilodss.remax.com.br/pt-br/imoveis/casa/venda/lajedo/850131018-97", "fotos": ["img/97_00.jpg", "img/97_01.jpg", "img/97_02.jpg", "img/97_03.jpg", "img/97_04.jpg", "img/97_05.jpg"], "mini": "img/97_capa.jpg"}, {"id": "850131018-99", "cod": "99", "titulo": "Casa de 3 quartos no Planalto", "local": "Bairro Planalto", "tags": ["Ótimo preço"], "filtros": ["medio"], "texto": "Casa no Bairro Planalto, com 126 m², 8 cômodos, 3 quartos, banheiro, jardim e garagem. Hoje o proprietário mora nela. Lugar tranquilo e aceita pets.", "extras": ["Garagem", "Jardim", "Aceita pets"], "preco": 110000, "quartos": 3, "banheiros": 1, "vagas": 1, "area": 126, "terreno": false, "coord": [-8.6609153, -36.3235279], "link": "https://danilodss.remax.com.br/pt-br/imoveis/casa/venda/lajedo/850131018-99", "fotos": ["img/99_00.jpg", "img/99_01.jpg", "img/99_02.jpg", "img/99_03.jpg", "img/99_04.jpg", "img/99_05.jpg", "img/99_06.jpg", "img/99_07.jpg", "img/99_08.jpg", "img/99_09.jpg", "img/99_10.jpg", "img/99_11.jpg", "img/99_12.jpg"], "mini": "img/99_capa.jpg"}, {"id": "850131018-111", "cod": "111", "titulo": "Casa em frente à praça", "local": "Bairro Poço · em frente à praça", "tags": ["Pet friendly"], "filtros": ["ate100"], "texto": "Casa no Bairro Poço, de frente para uma praça tranquila. Tem 175 m², garagem, varanda, quintal amplo e cozinha, perto de comércio, escolas e transporte. Hoje está alugada.", "extras": ["Varanda", "Quintal amplo", "Garagem", "Vista livre", "Aceita pets"], "preco": 100000, "quartos": null, "banheiros": null, "vagas": 1, "area": 175, "terreno": false, "coord": null, "link": "https://danilodss.remax.com.br/pt-br/imoveis/casa/venda/lajedo/em-frente-a-praca/850131018-111", "fotos": ["img/111_00.jpg", "img/111_01.jpg", "img/111_02.jpg", "img/111_03.jpg", "img/111_04.jpg", "img/111_05.jpg"], "mini": "img/111_capa.jpg"}, {"id": "850131018-92", "cod": "92", "titulo": "Casa no Centro, perto de tudo", "local": "Centro", "tags": ["Desocupada"], "filtros": ["ate100"], "texto": "Casa desocupada no Centro, boa para morar ou investir. São 156 m², 8 cômodos, 2 quartos, banheiro e jardim. Tem gás individual, aceita pets e é acessível para cadeirantes.", "extras": ["Jardim", "Gás individual", "Aceita pets", "Acessível"], "preco": 90000, "quartos": 2, "banheiros": 1, "vagas": null, "area": 156, "terreno": false, "coord": [-8.6565166, -36.317717], "link": "https://danilodss.remax.com.br/pt-br/imoveis/casa/venda/lajedo/850131018-92", "fotos": ["img/92_00.jpg", "img/92_01.jpg", "img/92_02.jpg", "img/92_03.jpg", "img/92_04.jpg", "img/92_05.jpg"], "mini": "img/92_capa.jpg"}, {"id": "850131018-104", "cod": "104", "titulo": "Casinha com piscina e churrasqueira", "local": "R. Antônio Dourado Cavalcante, 01", "tags": ["Ótimo preço", "Lazer"], "filtros": ["ate100", "piscina"], "texto": "Casinha de 100 m² com piscina, churrasqueira e área de lazer coberta. Tem 1 quarto e 1 banheiro. Serve para fins de semana e férias em família ou como investimento.", "extras": ["Piscina", "Churrasqueira", "Área de lazer", "Desocupada"], "preco": 85000, "quartos": 1, "banheiros": 1, "vagas": null, "area": 100, "terreno": false, "coord": [-8.6539847, -36.3074487], "link": "https://danilodss.remax.com.br/pt-br/imoveis/casa/venda/lajedo/01-antanio-douradocavalcante/850131018-104", "fotos": ["img/104_00.jpg", "img/104_01.jpg", "img/104_02.jpg", "img/104_03.jpg", "img/104_04.jpg", "img/104_05.jpg", "img/104_06.jpg"], "mini": "img/104_capa.jpg"}, {"id": "850131018-85", "cod": "85", "titulo": "Terreno de 200 m² na BR-423", "local": "BR-423 · Lajedo", "tags": ["Ótimo preço"], "filtros": ["ate100", "terreno"], "texto": "Terreno de 200 m² na beira da BR-423, em Lajedo. Serve para comércio ou para construir uma casa. É o menor valor da carteira.", "extras": ["Beira de rodovia", "Uso comercial ou residencial"], "preco": 20000, "quartos": null, "banheiros": null, "vagas": null, "area": 200, "terreno": true, "coord": null, "link": "https://danilodss.remax.com.br/pt-br/imoveis/terreno/venda/lajedo/850131018-85", "fotos": ["img/85_00.jpg", "img/85_01.jpg"], "mini": "img/85_capa.jpg"}];
+const IG = {"usuario": "danilo_consultor_imoveis", "foto": "", "bio": "", "seguidores": "", "posts": []};
+const CALMO = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* SONS: tudo sintetizado na hora com Web Audio (sem arquivo de áudio). Ruído com semente (mulberry32). */
+const SOM = (() => {
+  let ctx = null, mestre = null, ligado = true;
+  try { ligado = localStorage.getItem('danilo-som') !== '0'; } catch(e) {}
+  function mulberry32(a){ return function(){ a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  let ruido = null;
+  function pega(){
+    if (!ligado) return null;
+    if (!ctx) {
+      const A = window.AudioContext || window.webkitAudioContext; if (!A) return null;
+      ctx = new A();
+      const comp = ctx.createDynamicsCompressor(); comp.threshold.value = -18; comp.ratio.value = 4;
+      mestre = ctx.createGain(); mestre.gain.value = .55; mestre.connect(comp).connect(ctx.destination);
+      const r = mulberry32(2026); ruido = ctx.createBuffer(1, ctx.sampleRate * .5, ctx.sampleRate);
+      const d = ruido.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = r() * 2 - 1;
+    }
+    if (ctx.state === 'suspended') ctx.resume();
+    return ctx;
+  }
+  function tom(f, t0, dur, tipo, vol, f2){
+    const a = pega(); if (!a) return;
+    const o = a.createOscillator(), g = a.createGain(), t = a.currentTime + t0;
+    o.type = tipo || 'sine'; o.frequency.setValueAtTime(f, t);
+    if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + dur * .8);
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol || .15, t + .006); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    o.connect(g).connect(mestre); o.start(t); o.stop(t + dur + .03);
+  }
+  function sopro(dur, f1, f2, vol){
+    const a = pega(); if (!a) return;
+    const n = a.createBufferSource(), bp = a.createBiquadFilter(), g = a.createGain(), t = a.currentTime;
+    n.buffer = ruido; bp.type = 'bandpass'; bp.Q.value = 1.4;
+    bp.frequency.setValueAtTime(f1, t); bp.frequency.exponentialRampToValueAtTime(f2, t + dur);
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + dur * .35); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    n.connect(bp).connect(g).connect(mestre); n.start(t); n.stop(t + dur + .05);
+  }
+  return {
+    toque(){ tom(880, 0, .07, 'sine', .12, 1180); },
+    filtro(){ tom(520, 0, .08, 'triangle', .14, 780); tom(1040, .03, .06, 'sine', .05); },
+    add(){ tom(660, 0, .1, 'triangle', .2); tom(990, .07, .16, 'triangle', .2); tom(1980, .07, .08, 'sine', .04); },
+    tira(){ tom(740, 0, .09, 'triangle', .16); tom(440, .06, .16, 'triangle', .16); },
+    abre(){ sopro(.24, 380, 2600, .16); tom(1320, .12, .08, 'sine', .05); },
+    fecha(){ sopro(.2, 2200, 380, .12); },
+    tick(){ tom(1600, 0, .03, 'square', .035); },
+    envia(){ [523.25, 659.25, 783.99, 1046.5].forEach((f, k) => tom(f, k * .075, .42, 'sine', .13)); },
+    get ligado(){ return ligado; },
+    set ligado(v){ ligado = v; try { localStorage.setItem('danilo-som', v ? '1' : '0'); } catch(e) {} }
+  };
+})();
+const somBtn = document.getElementById('som');
+const pintaSom = () => { somBtn.setAttribute('aria-pressed', SOM.ligado); somBtn.setAttribute('aria-label', SOM.ligado ? 'Desligar efeitos sonoros' : 'Ligar efeitos sonoros'); };
+somBtn.onclick = () => { SOM.ligado = !SOM.ligado; pintaSom(); SOM.toque(); };
+pintaSom();
+const WA = '5587998240937';
+const FILTROS = [
+  {id:'todos', nome:'Todos', titulo:'Todos os imóveis', f:()=>true},
+  {id:'ate100', nome:'Até R$ 100 mil', titulo:'Até R$ 100 mil', f:i=>i.preco<=100000},
+  {id:'medio', nome:'R$ 100 a 250 mil', titulo:'De R$ 100 a 250 mil', f:i=>i.preco>100000&&i.preco<=250000},
+  {id:'alto', nome:'Alto padrão', titulo:'Alto padrão', f:i=>i.preco>250000},
+  {id:'piscina', nome:'Com piscina', titulo:'Com piscina', f:i=>i.filtros.includes('piscina')},
+  {id:'terreno', nome:'Terreno', titulo:'Terreno', f:i=>i.terreno},
+];
+const brl = v => 'R$ ' + v.toLocaleString('pt-BR');
+const curto = v => v>=1000000 ? 'R$ '+(v/1e6).toLocaleString('pt-BR')+' mi' : 'R$ '+Math.round(v/1000)+' mil';
+const $ = s => document.querySelector(s);
+const wa = txt => 'https://wa.me/' + WA + '?text=' + encodeURIComponent(txt);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ic = id => `<svg aria-hidden="true"><use href="#i-${id}"/></svg>`;
+const plural = (n, a, b) => n + ' ' + (n===1 ? a : b);
+
+function specs(i){
+  const s = [];
+  if (i.quartos) s.push(['cama', i.quartos, i.quartos===1?'quarto':'quartos']);
+  if (i.banheiros) s.push(['banho', i.banheiros, i.banheiros===1?'banheiro':'banheiros']);
+  if (i.vagas) s.push(['carro', i.vagas, i.vagas===1?'vaga':'vagas']);
+  if (i.area) s.push(['area', i.area, 'm²']);
+  return s;
+}
+
+/* topo */
+const oi = 'Olá, Danilo! Vi seu portfólio de imóveis e quero mais informações.';
+['#cta-wa','#info-wa','#loja-wa'].forEach(s => $(s).href = wa(oi));
+/* Instagram */
+const igUrl = 'https://www.instagram.com/' + IG.usuario + '/';
+['#cta-ig','#info-ig','#ig-btn'].forEach(s => $(s).href = igUrl);
+$('#info-ig-t').textContent = '@' + IG.usuario;
+$('#ig-user').textContent = '@' + IG.usuario;
+if (IG.seguidores) $('#ig-sub').textContent = IG.seguidores + ' seguidores' + (IG.publicacoes ? ' · ' + IG.publicacoes + ' publicações' : '');
+if (IG.bio) { $('#ig-bio').textContent = IG.bio; $('#ig-bio').hidden = false; }
+if (IG.foto) { $('#mono').innerHTML = `<img src="${IG.foto}" alt="">`; $('#ig-av').innerHTML = `<img src="${IG.foto}" alt="Foto de perfil do Danilo">`; }
+if (IG.posts && IG.posts.length) { $('#ig-grid').innerHTML = IG.posts.map((p,k) => `<a href="${igUrl}" target="_blank" rel="noopener" aria-label="Post ${k+1} no Instagram"><img src="${p}" alt="" loading="lazy"></a>`).join(''); $('#ig-grid').hidden = false; }
+/* letras do nome sobem uma a uma */
+document.querySelectorAll('[data-letras]').forEach(el => { el.setAttribute('aria-label', el.textContent); el.innerHTML = [...el.textContent].map((c,k) => `<span class="lt" style="--k:${k}" aria-hidden="true">${c}</span>`).join(''); });
+const precos = IMOVEIS.map(i=>i.preco);
+function conta(el, alvo, fmt, ms){
+  if (CALMO) { el.textContent = fmt(alvo); return; }
+  const t0 = performance.now();
+  const passo = t => { const p = Math.min(1, (t - t0) / ms), e = 1 - Math.pow(1 - p, 3); el.textContent = fmt(Math.round(alvo * e)); if (p < 1) requestAnimationFrame(passo); };
+  requestAnimationFrame(passo);
+}
+conta($('#h-total'), IMOVEIS.length, n => plural(n, 'imóvel à venda', 'imóveis à venda'), 900);
+conta($('#h-min'), Math.min(...precos), v => curto(Math.max(v, 1000)), 1100);
+conta($('#h-max'), Math.max(...precos), v => curto(Math.max(v, 1000)), 1400);
+const dest = IMOVEIS.find(i=>i.cod==='82') || IMOVEIS[0];
+$('#vit-img').src = dest.fotos[0];
+$('#vit-preco').textContent = brl(dest.preco);
+$('#vitrine').onclick = () => { SOM.abre(); abrir(dest.id); };
+/* vitrine inclina com o mouse */
+if (matchMedia('(hover:hover)').matches && !CALMO) {
+  const v = $('#vitrine'), pic = v.querySelector('.pic');
+  v.addEventListener('pointermove', e => { const r = v.getBoundingClientRect(); const x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5; pic.style.setProperty('--ry', (x * 10).toFixed(2) + 'deg'); pic.style.setProperty('--rx', (-y * 8).toFixed(2) + 'deg'); });
+  v.addEventListener('pointerleave', () => { pic.style.setProperty('--ry', '0deg'); pic.style.setProperty('--rx', '0deg'); });
+}
+/* barra de progresso da rolagem */
+const prog = $('#prog');
+const rola = () => { const h = document.documentElement.scrollHeight - innerHeight; prog.style.transform = `scaleX(${h > 0 ? scrollY / h : 0})`; };
+addEventListener('scroll', rola, {passive:true}); rola();
+
+/* lista de visita (fica salva só neste aparelho) */
+let lista = [];
+try { lista = JSON.parse(localStorage.getItem('danilo-visita') || '[]').filter(id => IMOVEIS.some(i=>i.id===id)); } catch(e) {}
+const salva = () => { try { localStorage.setItem('danilo-visita', JSON.stringify(lista)); } catch(e) {} };
+function voa(origem){
+  if (CALMO || !origem) return;
+  const card = origem.closest('.card'), img = card ? card.querySelector('.ph img') : document.querySelector('#gal-track img');
+  if (!img) return;
+  const a = img.getBoundingClientRect(), bagVis = $('#bag').classList.contains('show');
+  const ico = $('#bag-ico').getBoundingClientRect();
+  const alvo = bagVis ? ico : {left: ico.left, top: innerHeight - 64, width: 46, height: 46};
+  const f = document.createElement('img'); f.src = img.src; f.className = 'voa';
+  const w = Math.min(a.width, 160), h = w * .66;
+  Object.assign(f.style, {left: (a.left + a.width/2 - w/2) + 'px', top: (a.top + a.height/2 - h/2) + 'px', width: w + 'px', height: h + 'px'});
+  document.body.appendChild(f);
+  const dx = alvo.left + alvo.width/2 - (a.left + a.width/2), dy = alvo.top + alvo.height/2 - (a.top + a.height/2);
+  f.animate([
+    {transform: 'translate(0,0) scale(1) rotate(0deg)'},
+    {transform: `translate(${dx*.45}px,${dy*.45 - 120}px) scale(.7) rotate(-8deg)`, offset:.45},
+    {transform: `translate(${dx}px,${dy}px) scale(.18) rotate(6deg)`}
+  ], {duration: 700, easing: 'cubic-bezier(.45,0,.3,1)'}).onfinish = () => f.remove();
+}
+function alterna(id, origem){
+  const k = lista.indexOf(id);
+  if (k>=0) { lista.splice(k,1); SOM.tira(); } else { voa(origem); lista.push(id); SOM.add(); }
+  salva(); pintaLista();
+  const ico = $('#bag-ico'); ico.classList.remove('bump'); void ico.offsetWidth; ico.classList.add('bump');
+}
+function pintaLista(){
+  document.querySelectorAll('[data-add]').forEach(b => {
+    const on = lista.includes(b.dataset.add);
+    b.classList.toggle('ok', on);
+    b.innerHTML = on ? ic('ok') + (b.dataset.longo ? 'Na lista de visita' : 'Na lista') : ic('mais') + (b.dataset.longo ? 'Adicionar à lista de visita' : 'Visita');
+    b.setAttribute('aria-pressed', on);
+  });
+  $('#bag').classList.toggle('show', lista.length>0);
+  $('#bag-n').textContent = lista.length;
+  $('#bag-desc').textContent = lista.map(id => IMOVEIS.find(i=>i.id===id).titulo).join(' · ');
+}
+
+/* abas + cards */
+let filtro = 'todos';
+const tabs = $('#tabs');
+FILTROS.forEach(F => {
+  const n = IMOVEIS.filter(F.f).length; if (!n) return;
+  const b = document.createElement('button');
+  b.className = 'tab'; b.type = 'button'; b.setAttribute('role','tab'); b.dataset.f = F.id;
+  b.innerHTML = `${F.nome}<em>${n}</em>`;
+  b.onclick = () => { SOM.filtro(); filtro = F.id; pintaGrid(); document.getElementById('imoveis').scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'}); };
+  tabs.appendChild(b);
+});
+const mapaTab = document.createElement('button');
+mapaTab.className = 'tab'; mapaTab.type = 'button'; mapaTab.innerHTML = 'Mapa';
+mapaTab.onclick = () => { SOM.filtro(); $('#mapa-sec').scrollIntoView({behavior: CALMO ? 'auto' : 'smooth'}); };
+tabs.appendChild(mapaTab);
+
+function card(i, k){
+  return `<article class="card" style="--i:${k}" data-id="${i.id}">
+    <button class="ph" type="button" data-abre="${i.id}" aria-label="Ver fotos: ${esc(i.titulo)}">
+      <img src="${i.mini}" alt="">
+      <span class="cod">CÓD. ${i.cod}</span>
+      <span class="cnt">${ic('foto')}${i.fotos.length}</span>
+      <span class="preco">${brl(i.preco)}</span>
+    </button>
+    <div class="cb">
+      <div class="chips">${i.tags.map((t,j)=>`<span class="chip${j===0?' r':''}">${esc(t)}</span>`).join('')}</div>
+      <h3>${esc(i.titulo)}</h3>
+      <p class="loc">${ic('pin')}${esc(i.local)}</p>
+      <ul class="specs">${specs(i).map(([s,n,u])=>`<li>${ic(s)}${n} <span>${u}</span></li>`).join('')}</ul>
+      <div class="acts">
+        <button class="ver" type="button" data-abre="${i.id}">Ver detalhes</button>
+        <button class="add" type="button" data-add="${i.id}"></button>
+      </div>
+    </div>
+  </article>`;
+}
+function pintaGrid(){
+  const F = FILTROS.find(x=>x.id===filtro);
+  const vis = IMOVEIS.filter(F.f);
+  $('#grid').innerHTML = vis.map(card).join('');
+  $('#vazio').hidden = vis.length>0;
+  $('#sec-t').textContent = F.titulo;
+  $('#sec-n').textContent = plural(vis.length, 'imóvel', 'imóveis');
+  tabs.querySelectorAll('[data-f]').forEach(b => b.setAttribute('aria-selected', b.dataset.f===filtro));
+  const at = tabs.querySelector(`[data-f="${filtro}"]`); if (at) tabs.scrollTo({left: at.offsetLeft - 16, behavior: CALMO ? 'auto' : 'smooth'});
+  revela();
+  pintaLista();
+}
+/* cards sobem quando entram na tela; o preço cai como carimbo */
+let io = null;
+if ('IntersectionObserver' in window && !CALMO) io = new IntersectionObserver(es => {
+  let n = 0;
+  es.forEach(e => { if (e.isIntersecting) { e.target.style.setProperty('--c', n++); e.target.classList.add('in'); io.unobserve(e.target); } });
+}, {rootMargin: '0px 0px -8% 0px'});
+function revela(){ document.querySelectorAll('#grid .card').forEach(c => io ? io.observe(c) : c.classList.add('in')); }
+document.addEventListener('click', e => {
+  const a = e.target.closest('[data-abre]'); if (a) { SOM.abre(); return abrir(a.dataset.abre); }
+  const b = e.target.closest('[data-add]'); if (b) return alterna(b.dataset.add, b);
+  const w = e.target.closest('a[href*="wa.me"]'); if (w) SOM.envia();
+  const ig = e.target.closest('a[href*="instagram.com"]'); if (ig) SOM.toque();
+});
+
+/* folhas */
+let ultimoFoco = null;
+function mostra(bg){ ultimoFoco = document.activeElement; bg.hidden = false; document.body.style.overflow = 'hidden'; const x = bg.querySelector('.x'); if (x) x.focus({preventScroll:true}); }
+function fecha(bg){ SOM.fecha(); bg.hidden = true; if ($('#det-bg').hidden && $('#ag-bg').hidden) document.body.style.overflow = ''; if (ultimoFoco) ultimoFoco.focus({preventScroll:true}); }
+document.querySelectorAll('.co-bg').forEach(bg => bg.addEventListener('click', e => { if (e.target===bg || e.target.closest('[data-fecha]')) fecha(bg); }));
+document.addEventListener('keydown', e => {
+  if (e.key==='Escape') { const bg = [...document.querySelectorAll('.co-bg')].find(b=>!b.hidden); if (bg) fecha(bg); }
+  if (!$('#det-bg').hidden && (e.key==='ArrowRight'||e.key==='ArrowLeft')) vai(e.key==='ArrowRight'?1:-1);
+});
+
+let galAtual = 0;
+function vai(d){ const t = $('#gal-track'); if (!t) return; const n = t.children.length; irPara(Math.max(0, Math.min(n-1, galAtual+d))); }
+function irPara(k){ const t = $('#gal-track'); t.scrollTo({left: k*t.clientWidth, behavior:'smooth'}); }
+function abrir(id){
+  const i = IMOVEIS.find(x=>x.id===id);
+  const det = $('#det');
+  det.innerHTML = `
+    <div class="gal">
+      <div class="gal-track" id="gal-track">${i.fotos.map((f,k)=>`<img src="${f}" alt="Foto ${k+1} de ${i.fotos.length}: ${esc(i.titulo)}" ${k>1?'loading="lazy"':''}>`).join('')}</div>
+      <span class="gal-n" id="gal-n">1 / ${i.fotos.length}</span>
+      <button class="x" type="button" data-fecha aria-label="Fechar">×</button>
+      <button class="gal-a p" type="button" aria-label="Foto anterior">‹</button>
+      <button class="gal-a n" type="button" aria-label="Próxima foto">›</button>
+    </div>
+    <div class="co-pad">
+      <div class="thumbs" id="thumbs">${i.fotos.map((f,k)=>`<button type="button" data-k="${k}" aria-label="Foto ${k+1}"><img src="${f}" alt="" loading="lazy"></button>`).join('')}</div>
+      <div class="d-preco"><span class="preco">${brl(i.preco)}</span><span class="chips">${i.tags.map(t=>`<span class="chip">${esc(t)}</span>`).join('')}<span class="chip">Cód. ${i.cod}</span></span></div>
+      <h2 id="d-tit" style="margin:8px 0 4px;font:400 26px/1.08 var(--title)">${esc(i.titulo)}</h2>
+      <p class="loc">${ic('pin')}${esc(i.local)}, Lajedo – PE</p>
+      <div class="d-specs">${specs(i).map(([s,n,u])=>`<div>${ic(s)}<span><b>${n}</b><small>${u}</small></span></div>`).join('')}</div>
+      <p class="d-txt">${esc(i.texto)}</p>
+      <p class="leg">Destaques</p>
+      <div class="extras">${i.extras.map(x=>`<span>${esc(x)}</span>`).join('')}</div>
+      <div class="d-acts">
+        <a class="btn btn-wa" target="_blank" rel="noopener" href="${wa(`Olá, Danilo! Vi no seu portfólio e tenho interesse no imóvel cód. ${i.cod}: ${i.titulo} (${brl(i.preco)}). Podemos marcar uma visita?\n${i.link}`)}">${ic('wa')}Quero visitar este imóvel</a>
+        <button class="btn btn-w add" type="button" data-add="${i.id}" data-longo="1" style="box-shadow:0 3px 0 var(--line);border:2px solid var(--blue)"></button>
+      </div>
+      <a class="d-link" href="${i.link}" target="_blank" rel="noopener">Ver o anúncio no site da RE/MAX</a>
+    </div>`;
+  galAtual = 0;
+  const t = $('#gal-track'), th = $('#thumbs');
+  const marca = () => {
+    const novo = t.clientWidth ? Math.round(t.scrollLeft / t.clientWidth) : 0;
+    if (novo !== galAtual) SOM.tick();
+    galAtual = novo;
+    $('#gal-n').textContent = `${galAtual+1} / ${i.fotos.length}`;
+    th.querySelectorAll('button').forEach((b,k) => b.setAttribute('aria-current', k===galAtual));
+    const ab = th.children[galAtual]; if (ab) th.scrollTo({left: ab.offsetLeft - th.clientWidth/2 + ab.clientWidth/2, behavior:'smooth'});
+  };
+  t.addEventListener('scroll', () => { clearTimeout(t._m); t._m = setTimeout(marca, 60); });
+  th.onclick = e => { const b = e.target.closest('[data-k]'); if (b) irPara(+b.dataset.k); };
+  det.querySelector('.gal-a.p').onclick = () => vai(-1);
+  det.querySelector('.gal-a.n').onclick = () => vai(1);
+  pintaLista();
+  mostra($('#det-bg'));
+  det.scrollTop = 0; t.scrollLeft = 0; marca();
+}
+
+/* agendar */
+const HORAS = ['Manhã','Tarde','Fim de semana','Tanto faz'];
+const PAGS = ['À vista','Financiamento','Com FGTS','Ainda não sei'];
+const opts = (el, nome, lst) => el.innerHTML = lst.map((x,k)=>`<label><input type="radio" name="${nome}" value="${x}" ${k===lst.length-1?'checked':''}><span>${x}</span></label>`).join('');
+opts($('#ag-hora'), 'hora', HORAS); opts($('#ag-pag'), 'pag', PAGS);
+function pintaAg(){
+  $('#ag-lista').innerHTML = lista.map(id => { const i = IMOVEIS.find(x=>x.id===id);
+    return `<li><img src="${i.mini}" alt=""><span>${esc(i.titulo)}<small>${brl(i.preco)} · cód. ${i.cod}</small></span><button type="button" data-tira="${id}" aria-label="Tirar da lista">×</button></li>`; }).join('');
+}
+$('#ag-lista').onclick = e => { const b = e.target.closest('[data-tira]'); if (!b) return; alterna(b.dataset.tira, null); pintaAg(); if (!lista.length) fecha($('#ag-bg')); };
+$('#bag-go').onclick = () => { SOM.abre(); pintaAg(); try { $('#ag-nome').value = localStorage.getItem('danilo-nome') || ''; } catch(e) {} mostra($('#ag-bg')); };
+$('#ag-form').onsubmit = e => {
+  e.preventDefault();
+  const nome = $('#ag-nome').value.trim();
+  $('#f-nome').classList.toggle('erro', !nome);
+  if (!nome) { $('#ag-nome').focus(); return; }
+  try { localStorage.setItem('danilo-nome', nome); } catch(e) {}
+  const hora = new FormData(e.target).get('hora'), pag = new FormData(e.target).get('pag');
+  const itens = lista.map(id => { const i = IMOVEIS.find(x=>x.id===id); return `• Cód. ${i.cod}: ${i.titulo} (${brl(i.preco)})`; }).join('\n');
+  const msg = `Olá, Danilo! Sou ${nome} e vi seu portfólio. Quero visitar ${lista.length===1?'este imóvel':'estes imóveis'}:\n${itens}\n\nMelhor horário: ${hora}\nPagamento: ${pag}`;
+  SOM.envia();
+  window.open(wa(msg), '_blank', 'noopener');
+};
+
+pintaGrid();
+
+/* mapa */
+(function(){
+  const pts = IMOVEIS.filter(i=>i.coord);
+  if (!window.L || !pts.length) { $('#mapa-sec').hidden = true; return; }
+  const m = L.map('mapa', {scrollWheelZoom:false, attributionControl:true});
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:19, attribution:'© OpenStreetMap'}).addTo(m);
+  const g = pts.map(i => L.marker(i.coord, {icon: L.divIcon({className:'', html:'', iconSize:[0,0]})}).on('click', () => abrir(i.id)).addTo(m));
+  /* escolhe para que lado cada preço abre, sem um tampar o outro */
+  function arruma(){
+    const caixas = [], W = 76, H = 28, G = 6;
+    const lados = {top:[-W/2,-H-G], bottom:[-W/2,G], right:[G+4,-H/2], left:[-W-G-4,-H/2]};
+    g.forEach((mk, k) => {
+      const p = m.latLngToContainerPoint(mk.getLatLng());
+      let melhor = 'top', menor = 1e9;
+      for (const [lado, [dx, dy]] of Object.entries(lados)) {
+        const c = {x: p.x + dx, y: p.y + dy};
+        const sob = caixas.reduce((acc, b) => acc + Math.max(0, Math.min(c.x + W, b.x + W) - Math.max(c.x, b.x)) * Math.max(0, Math.min(c.y + H, b.y + H) - Math.max(c.y, b.y)), 0);
+        if (sob < menor) { menor = sob; melhor = lado; }
+        if (sob === 0) break;
+      }
+      caixas.push({x: p.x + lados[melhor][0], y: p.y + lados[melhor][1]});
+      mk.unbindTooltip().bindTooltip(curto(pts[k].preco), {permanent:true, direction:melhor, className:'pin', interactive:true});
+      const el = mk.getTooltip().getElement(); if (el) { el.style.cursor = 'pointer'; el.onclick = () => { SOM.abre(); abrir(pts[k].id); }; }
+    });
+  }
+  m.fitBounds(L.featureGroup(g).getBounds().pad(.25));
+  arruma(); m.on('zoomend', arruma);
+})();
+</script>
+</body>
+</html>
